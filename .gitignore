@@ -1,0 +1,54 @@
+# Temp files
+.DS_Store
+*~
+buck-out/
+
+# Compiled files
+.venv/
+venv/
+.env
+.env.*
+
+__pycache__/
+.mypy_cache/
+.ruff_cache/
+*.log
+
+# Distribution / packaging
+/build/
+/dist/
+/*.egg-info/
+
+# Tests and coverage
+/.pytest_cache/
+/.cache/
+
+# docs
+/docs/generated/
+/docs/_build/
+
+# IDEs
+/.idea/
+/.vscode/
+*.code-workspace
+
+# Node
+node_modules
+
+# Checkpoints and model files
+*.ipynb_checkpoints
+*.h5ad
+*.pth
+*.pt
+*.ckpt
+dataset
+*/outputs
+/outputs
+*.csv
+*.png
+
+# Other folders
+/notebooks/
+/data/ADNI/
+/MAEMI/classification/
+private/

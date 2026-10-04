@@ -1,0 +1,4 @@
+data_dir: ${oc.env:ADNI_DIR}  # ${oc.env:A4_DIR}
+project_dir: ${oc.env:MAEMI_PROJECT_DIR}
+adni_dir: ${oc.env:ADNI_DIR}
+bbox_csv: bboxes_from_segs.csv

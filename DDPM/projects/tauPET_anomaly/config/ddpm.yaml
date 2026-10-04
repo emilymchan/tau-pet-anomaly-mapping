@@ -1,0 +1,119 @@
+name: DDPM
+target_size: &target_size !!python/tuple [72, 72, 72]
+train_batch_size: &tbatch_size 3
+downstream_batch_size: &dbatch_size 1
+
+project_dir: &project_dir 'PATH_TO_PROJECT/'
+
+# relative paths from project_dir
+patch_file: &patch_file 'MAEMI/tauPET/rescale_in0_5_out0_1_15x15x15/patches.h5'
+checkpoint_path: &checkpoint_path 'DDPM/tauPET/weights/'
+wandb_dir: 'DDPM/tauPET/'
+
+#
+# Experiment
+#
+experiment:
+  name: tauPET
+  task: test # train 
+  weights: 'PATH_TO_WEIGHTS/latest_model.pt'
+
+device: gpu
+configurator:
+  module_name: core.Configurator
+  class_name: DLConfigurator
+  params:
+#
+# Model
+#
+model:
+  module_name: model_zoo.ddpm
+  class_name: DDPM
+  params:
+    spatial_dims: 3
+    in_channels: 1
+    out_channels: 1
+    num_channels: 
+      - 256
+      - 256
+      - 512
+    attention_levels:
+      - False
+      - False
+      - True
+    num_res_blocks: 2
+    num_head_channels: [0, 0, 512]
+
+    # Scheduling and noising scheme
+    train_scheduler: "ddpm"
+    inference_scheduler: "ddim"
+    inference_steps: 50
+    noise_level_recon: 600
+    noise_type: "gaussian" # Change to 'simplex' for Simplex noise
+    prediction_type: "epsilon"
+    eta: 0.5 # Only used for DDIM scheduler, controls the stochasticity of the sampling process. eta=0 corresponds to deterministic sampling, while eta=1 corresponds to fully stochastic sampling (similar to DDPM).
+
+ 
+#
+# Trainer
+#
+trainer:
+  module_name: projects.tauPET_anomaly.DDPMTrainer
+  class_name: PTrainer
+  params:
+    input_size: *target_size
+    patch_file:
+      - *project_dir
+      - *patch_file
+    no_norm_patch_file:
+      - *project_dir
+      - *no_norm_patch_file
+    checkpoint_path:
+      - *project_dir
+      - *checkpoint_path
+    batch_size: *tbatch_size
+    nr_epochs: 1500
+    patience: 1500
+    val_interval: 50
+    "lr_scheduler": "cosine"
+    # Loss
+    loss:
+      module_name: None  # optim.losses.ln_losses
+      class_name: MSE  # L2
+      # params:
+    optimizer_params:
+      lr: 0.0001
+  # Data Loader
+  data_loader:
+    module_name: core.DataLoader
+    class_name: DefaultDataLoader
+    params:
+      args:
+        target_size: *target_size
+        batch_size: *tbatch_size
+        dataset_module:
+          module_name: data.dataset
+          class_name: MAEDataset
+        rescale: [0, 5, 0, 1] # for ADNI, patches are already [0, 1], but rescale for inference
+        augment:
+            flip: False
+            rot: 15
+            zoom: False #[0.9, 1.1]
+            offset: False #[-0.025, 0.025]
+            noise: 
+                type: gaussian
+                variance: [0.0, 0.05]
+            blur: False
+        data_dir:
+          - *project_dir
+          - 'MAEMI/train_val_test_UAD.csv'
+        patch_file:
+          - *project_dir
+          - *patch_file
+        modalities: ['tauPET']
+
+# Downstream tasks
+downstream_tasks:
+predict:
+  module_name: projects.tauPET_anomaly.DDPMPredictor
+  class_name: PPredictor

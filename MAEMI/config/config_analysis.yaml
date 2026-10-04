@@ -1,0 +1,32 @@
+defaults:
+  - _self_
+  - device: default
+
+anomaly_eval_folder: ${oc.env:ANOMALY_EVAL_DIR}
+evaluation_split: 'test'
+meta_data_file: "train_val_test_UAD.csv"
+no_norm_patch_file: 'no_norm_patches.h5'
+pred_file: 'pred.h5'
+
+schaefer_atlas: "Schaefer2018_200Parcels_17Networks_order_FSLMNI152_1_5mm.nii.gz"
+schaefer_braak: "Schaefer200_17Network_Braak_assignment.xlsx"
+
+# Which analyses to carry out
+input_types: [
+    "tauSUVR",
+    "tauSUVR_thresholded_voxels",  # threshold then count number of anomalous voxels
+    "tauSUVR_thresholded_tau",  # threshold then use the binary mask on the original image
+    "anomaly",
+    "anomaly_thresholded_voxels",
+    "anomaly_thresholded_tau",
+    ]
+anomaly_thresholds: [0.01, 0.26]
+hist_matched_thresholds: [0.01]
+tau_thresholds: [1.3]
+stratifications: ["dx", "tau", "amy"]  #, "tau", "amy", "dx_amy", "dx_tau"]  # ["DX_bl", "DX_MCI_granular", "dx"]
+combine_SMC_CN: True   # Treat CN and SMC as one class for DX_bl
+
+# Histogram matching parameters
+histogram_bins: 200
+hist_range: [0, 3.5]
+overwrite_histMatched: False  # Whether to rerun when some subjects already have been run
