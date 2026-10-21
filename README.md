@@ -13,9 +13,9 @@ The resulting anomaly maps are evaluated using regional measurements and compare
 
 - `MAEMI/` — MAE training, inference and analysis.
 - `DDPM/` — DDPM training, inference and analysis.
-- `MAEMI/data/` — Data preprocessing and patch generation.
-- `MAEMI/analysis/` — Regional analysis and evaluation.
-- `MAEMI/utils/` — Supporting utilities.
+- `data/` — Data preprocessing and patch generation.
+- `analysis/` — Regional analysis and evaluation.
+- `utils/` — Supporting utilities.
 
 The repository also includes notebooks used to produce selected analyses and figures for the manuscript.
 
